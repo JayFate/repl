@@ -238,20 +238,12 @@ export class ReplStore implements Store {
     } else {
       try {
         const json = JSON.parse(map.code)
-        if (!json.imports.vue) {
-          json.imports.vue = this.defaultVueRuntimeURL
-        } else {
-          json.imports.vue = fixURL(json.imports.vue)
-        }
-        if (!json.imports['vue/server-renderer']) {
-          json.imports['vue/server-renderer'] = this.defaultVueServerRendererURL
-        } else {
-          json.imports['vue/server-renderer'] = fixURL(
-            json.imports['vue/server-renderer']
-          )
-        }
+        json.imports.vue = fixURL(json.imports.vue) || this.defaultVueRuntimeURL
+        json.imports['vue/server-renderer'] = fixURL(
+          json.imports['vue/server-renderer']
+        ) || this.defaultVueServerRendererURL
         map.code = JSON.stringify(json, null, 2)
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -307,6 +299,7 @@ export class ReplStore implements Store {
   }
 }
 
-function fixURL(url: string) {
+function fixURL(url?: string) {
+  if (!url) return
   return url.replace('https://sfc.vuejs', 'https://play.vuejs')
 }
